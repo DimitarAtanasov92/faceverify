@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'verification/styles.css' %}">
+    <title>Верификация</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Верификация на профил</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="button" id="capture-id">Заснеми ID</button>
+            <button type="button" id="capture-face">Заснеми Лице</button>
+        </form>
+
+        <h2>ID Документ</h2>
+        <video id="video-id" width="300" height="300" autoplay></video>
+
+        <h2>Лице</h2>
+        <video id="video-face" width="300" height="300" autoplay></video>
+
+        <script>
+            const videoId = document.getElementById('video-id');
+            const videoFace = document.getElementById('video-face');
+
+            // Достъп до задната камера за ID документа
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } })
+                .then(stream => {
+                    videoId.srcObject = stream;
+                });
+
+            // Достъп до предната камера за лицето
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(stream => {
+                    videoFace.srcObject = stream;
+                });
+
+            document.getElementById('capture-id').onclick = function() {
+                captureImage(videoId, 'id_image');
+            };
+
+            document.getElementById('capture-face').onclick = function() {
+                captureImage(videoFace, 'face_image');
+            };
+
+            function captureImage(videoElement, imageName) {
+                const canvas = document.createElement('canvas');
+                canvas.width = videoElement.videoWidth;
+                canvas.height = videoElement.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(videoElement, 0, 0);
+                const imageData = canvas.toDataURL('image/png');
+
+                // Изпрати изображението на сървъра
+                fetch('/verification/upload/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ image: imageData, name: imageName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    // Обработка на отговора
+                });
+            }
+        </script>
+    </div>
+</body>
+</html>

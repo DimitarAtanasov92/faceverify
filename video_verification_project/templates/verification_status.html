@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <h1>Статус на верификация</h1>
+  {% if verification %}
+    <p>Лицева верификация: {% if verification.лицева_верификация_успешна %}Успешна{% else %}Неуспешна{% endif %}</p>
+    <p>Верификация на документ: {% if verification.документ_верификация_успешна %}Успешна{% else %}Неуспешна{% endif %}</p>
+    <p>Верификация на жив човек: {% if verification.жив_човек_верификация_успешна %}Успешна{% else %}Неуспешна{% endif %}</p>
+    {% if verification.сканирани_данни_предна_страна %}
+      <h2>Данни от предна страна на документа:</h2>
+      <ul>
+      {% for key, value in verification.сканирани_данни_предна_страна.items %}
+        <li>{{ key }}: {{ value }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+    {% if verification.сканирани_данни_задна_страна %}
+      <h2>Данни от задна страна на документа:</h2>
+      <ul>
+      {% for key, value in verification.сканирани_данни_задна_страна.items %}
+        <li>{{ key }}: {{ value }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+    <p>Време на верификация: {{ verification.време_на_верификация }}</p>
+  {% else %}
+    <p>Верификацията не е стартирана.</p>
+</body>
+</html>

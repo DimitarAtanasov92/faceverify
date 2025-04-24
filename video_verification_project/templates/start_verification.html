@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+ <h1>Стартиране на верификация</h1>
+  <form method="post" action="{% url 'verification_process' %}">
+    {% csrf_token %}
+    <button type="submit">Започни верификация</button>
+  </form>
+</body>
+</html>

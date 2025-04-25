@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<h2>Profile: {{ user.username }}</h2>
+<p><strong>Email:</strong> {{ user.email }}</p>
+<p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+
+<hr>
+
+<h3>Verification Status</h3>
+{% if profile.is_verified %}
+    <div class="alert alert-success" role="alert">
+        Your profile is VERIFIED.
+    </div>
+     {% if verification_doc and verification_doc.extracted_data %}
+        <h4>Extracted Document Information</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+                <tbody>
+                    {% if verification_doc.extracted_data.first_name %}
+                        <tr>
+                            <th scope="row">First Name</th>
+                            <td>{{ verification_doc.extracted_data.first_name }}</td>
+                        </tr>
+                    {% endif %}
+                    
+                    {% if verification_doc.extracted_data.last_name %}
+                        <tr>
+                            <th scope="row">Last Name</th>
+                            <td>{{ verification_doc.extracted_data.last_name }}</td>
+                        </tr>
+                    {% endif %}
+                    
+                    {% if verification_doc.extracted_data.phone %}
+                        <tr>
+                            <th scope="row">Identity Number</th>
+                            <td>{{ verification_doc.extracted_data.phone }}</td>
+                        </tr>
+                    {% elif verification_doc.extracted_data.identity_number %}
+                        <tr>
+                            <th scope="row">Identity Number</th>
+                            <td>{{ verification_doc.extracted_data.identity_number }}</td>
+                        </tr>
+                    {% endif %}
+                    
+                    {% if verification_doc.extracted_data.document_number %}
+                        <tr>
+                            <th scope="row">Personal Number</th>
+                            <td>{{ verification_doc.extracted_data.document_number }}</td>
+                        </tr>
+                    {% elif verification_doc.extracted_data.personal_number %}
+                        <tr>
+                            <th scope="row">Personal Number</th>
+                            <td>{{ verification_doc.extracted_data.personal_number }}</td>
+                        </tr>
+                    {% endif %}
+                    
+                    {% if verification_doc.extracted_data.birth_date %}
+                        <tr>
+                            <th scope="row">Date of Birth</th>
+                            <td>{{ verification_doc.extracted_data.birth_date }}</td>
+                        </tr>
+                    {% endif %}
+                    
+                    {% if verification_doc.extracted_data.expiry_date %}
+                        <tr>
+                            <th scope="row">Expiry Date</th>
+                            <td>{{ verification_doc.extracted_data.expiry_date }}</td>
+                        </tr>
+                    {% endif %}
+                    
+                    {% if verification_doc.extracted_data.nationality %}
+                        <tr>
+                            <th scope="row">Nationality</th>
+                            <td>{{ verification_doc.extracted_data.nationality }}</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <a href="{% url 'verification_status' %}" class="btn btn-info btn-sm">View Full Details</a>
+    {% endif %}
+{% elif verification_doc %}
+    {# User has started the process but not completed successfully #}
+    <div class="alert {% if verification_doc.status == 'PROCESSING' %}alert-info{% elif verification_doc.status == 'NEEDS_SELFIE' %}alert-warning{% else %}alert-danger{% endif %}" role="alert">
+         Status: <strong>{{ verification_doc.get_status_display }}</strong>
+         {% if verification_doc.status_reason %}
+            <br>Reason: {{ verification_doc.status_reason }}
+         {% endif %}
+    </div>
+    {% if verification_doc.status == 'PENDING' or verification_doc.status == 'FAILED_DATA' or verification_doc.status == 'FAILED_MATCH' or verification_doc.status == 'FAILED_MANUAL' %}
+        <p>Please try verification again.</p>
+        <a href="{% url 'start_verification' %}" class="btn btn-warning">Start/Retry Verification</a>
+    {% elif verification_doc.status == 'NEEDS_SELFIE' %}
+         <p>Please upload a selfie to continue.</p>
+         <a href="{% url 'upload_selfie' %}" class="btn btn-primary">Upload Selfie</a>
+    {% elif verification_doc.status == 'PROCESSING' %}
+         <p>Your documents are being processed. Please check back later.</p>
+         <a href="{% url 'verification_status' %}" class="btn btn-info">Check Status</a>
+    {% endif %}
+{% else %}
+    <div class="alert alert-secondary" role="alert">
+        Your profile is not verified yet.
+    </div>
+    <a href="{% url 'start_verification' %}" class="btn btn-primary">Start Verification</a>
+{% endif %}
+{% endblock %}

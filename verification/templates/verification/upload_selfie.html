@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Качване на селфи{% endblock %}
+
+{% block content %}
+<h2>Стъпка 2: Верификация на лице</h2>
+<p>Моля, качете ясно Ваше селфи (или кратко видео според инструкциите, които бихте получили в реално приложение).</p>
+<p>Това ще бъде сравнено със снимката от Вашия документ.</p>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Качи и Завърши Верификация</button>
+</form>
+{% endblock %}

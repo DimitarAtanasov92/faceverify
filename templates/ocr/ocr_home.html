@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}OCR - Optical Character Recognition{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">OCR - Extract Text from Images</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Upload an image containing text, and our OCR system will extract the text for you.</p>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">Image with text</label>
+                            {{ form.image }}
+                            <div class="form-text">Supported formats: JPG, PNG, BMP, TIFF</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Process with OCR</button>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'ocr:recent_images' %}" class="btn btn-outline-secondary">View Recent OCR Images</a>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">About Our OCR System</h4>
+                </div>
+                <div class="card-body">
+                    <p>Our OCR system uses advanced image processing techniques to:</p>
+                    <ul>
+                        <li>Preprocess images to improve text recognition</li>
+                        <li>Convert different types of text into digital format</li>
+                        <li>Extract text from scanned documents, photos, and more</li>
+                    </ul>
+                    <p>The system works best with clear, well-lit images with good contrast between text and background.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

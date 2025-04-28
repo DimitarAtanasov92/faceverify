@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Extracted Data{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Upload Extracted Data</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Upload extracted data from your identity document.</p>
+                    
+                    <div class="alert alert-info">
+                        <p>You can paste the extracted JSON data below or upload a file.</p>
+                    </div>
+                    
+                    <form id="extractedDataForm" method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="jsonData" class="form-label">JSON Data:</label>
+                            <textarea id="jsonData" class="form-control" rows="10" placeholder='{"field": "value"}'></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="jsonFile" class="form-label">Or upload JSON file:</label>
+                            <input type="file" id="jsonFile" class="form-control" accept=".json">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Process Data</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle file upload
+    const jsonFileInput = document.getElementById('jsonFile');
+    const jsonDataTextarea = document.getElementById('jsonData');
+    
+    jsonFileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            jsonDataTextarea.value = event.target.result;
+        };
+        reader.readAsText(file);
+    });
+    
+    // Handle form submission
+    const form = document.getElementById('extractedDataForm');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const jsonData = jsonDataTextarea.value;
+        if (!jsonData.trim()) {
+            alert('Please enter or upload JSON data');
+            return;
+        }
+        
+        // Send the data
+        fetch('{% url "upload_extracted_data" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: jsonData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Data uploaded successfully!');
+                window.location.href = '{% url "verification_status" %}';
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error uploading data');
+        });
+    });
+});
+</script>
+{% endblock %} 

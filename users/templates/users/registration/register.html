@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<h2>Регистрация</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }} {# Или рендирайте полетата поотделно за по-добър контрол #}
+    <button type="submit" class="btn btn-primary">Регистрация</button>
+</form>
+<p class="mt-3">Имате акаунт? <a href="{% url 'login' %}">Влезте тук</a></p>
+{% endblock %}

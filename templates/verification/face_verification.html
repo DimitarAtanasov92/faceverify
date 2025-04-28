@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Face Verification</h2>
+    <p>Upload your selfie and ID document photo for verification</p>
+    
+    <form id="faceVerificationForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="selfie" class="form-label">Selfie Photo</label>
+            <input type="file" class="form-control" id="selfie" name="selfie" accept="image/*" required>
+        </div>
+        <div class="mb-3">
+            <label for="id_document" class="form-label">ID Document Photo</label>
+            <input type="file" class="form-control" id="id_document" name="id_document" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Verify Faces</button>
+    </form>
+
+    <div id="result" class="mt-4" style="display: none;">
+        <div class="alert" role="alert">
+            <h4 class="alert-heading">Verification Result</h4>
+            <p id="resultText"></p>
+            <p id="confidenceText"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('faceVerificationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/verification/verify-faces/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const resultDiv = document.getElementById('result');
+        const resultText = document.getElementById('resultText');
+        const confidenceText = document.getElementById('confidenceText');
+        
+        resultDiv.style.display = 'block';
+        
+        if (data.success) {
+            resultDiv.className = 'mt-4 alert alert-' + (data.is_match ? 'success' : 'danger');
+            resultText.textContent = data.is_match ? 'Faces match!' : 'Faces do not match.';
+            confidenceText.textContent = `Confidence: ${(data.confidence * 100).toFixed(2)}%`;
+        } else {
+            resultDiv.className = 'mt-4 alert alert-danger';
+            resultText.textContent = 'Error: ' + data.error;
+            confidenceText.textContent = '';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'mt-4 alert alert-danger';
+        document.getElementById('resultText').textContent = 'An error occurred during verification.';
+    });
+});
+</script>
+{% endblock %} 

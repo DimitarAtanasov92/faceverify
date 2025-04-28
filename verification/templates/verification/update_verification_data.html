@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Update Verification Data{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Update Verification Data</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="first_name">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" 
+                                   value="{{ extracted_data.first_name|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="last_name">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" 
+                                   value="{{ extracted_data.last_name|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="identity_number">Identity Number</label>
+                            <input type="text" class="form-control" id="identity_number" name="identity_number" 
+                                   value="{{ extracted_data.identity_number|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="personal_number">Personal Number</label>
+                            <input type="text" class="form-control" id="personal_number" name="personal_number" 
+                                   value="{{ extracted_data.personal_number|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="birth_date">Birth Date</label>
+                            <input type="text" class="form-control" id="birth_date" name="birth_date" 
+                                   value="{{ extracted_data.birth_date|default:'' }}" placeholder="DD.MM.YYYY">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="expiry_date">Expiry Date</label>
+                            <input type="text" class="form-control" id="expiry_date" name="expiry_date" 
+                                   value="{{ extracted_data.expiry_date|default:'' }}" placeholder="DD.MM.YYYY">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="nationality">Nationality</label>
+                            <input type="text" class="form-control" id="nationality" name="nationality" 
+                                   value="{{ extracted_data.nationality|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="sex">Sex</label>
+                            <select class="form-control" id="sex" name="sex">
+                                <option value="">Select...</option>
+                                <option value="M" {% if extracted_data.sex == 'M' %}selected{% endif %}>Male</option>
+                                <option value="F" {% if extracted_data.sex == 'F' %}selected{% endif %}>Female</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="height">Height (cm)</label>
+                            <input type="number" class="form-control" id="height" name="height" 
+                                   value="{{ extracted_data.height|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="eye_color">Eye Color</label>
+                            <input type="text" class="form-control" id="eye_color" name="eye_color" 
+                                   value="{{ extracted_data.eye_color|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="permanent_address">Permanent Address</label>
+                    <textarea class="form-control" id="permanent_address" name="permanent_address" 
+                              rows="2">{{ extracted_data.permanent_address|default:'' }}</textarea>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Update Data</button>
+                    <a href="{% url 'verification_status' %}" class="btn btn-secondary ml-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

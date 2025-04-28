@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Verification Failed{% endblock %}
+
+{% block content %}
+<h2>Verification Failed</h2>
+
+<div class="card mb-4 border-danger">
+    <div class="card-header bg-danger text-white">
+        <h3>Status: {{ verification_doc.get_status_display }}</h3>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-danger">
+            <h4>Verification was unsuccessful</h4>
+            <p>
+                <strong>Reason:</strong> 
+                {% if verification_doc.status_reason %}
+                    {{ verification_doc.status_reason }}
+                {% else %}
+                    The verification process could not be completed.
+                {% endif %}
+            </p>
+        </div>
+        
+        {% if debug_info %}
+            <div class="mt-4">
+                <h4 class="text-info">Debug Information</h4>
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Attempt Timestamp</th>
+                                    <td>{{ debug_info.timestamp }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Debug Level Used</th>
+                                    <td>{{ debug_info.debug_level }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fields Found</th>
+                                    <td>{{ debug_info.extracted_fields_count }}</td>
+                                </tr>
+                                {% if debug_info.extracted_fields %}
+                                <tr>
+                                    <th>Fields Detected</th>
+                                    <td>{{ debug_info.extracted_fields|join:", " }}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        
+                        <div class="alert alert-info mt-3">
+                            <h5>Troubleshooting Tips:</h5>
+                            <ul>
+                                <li>Make sure your document is clearly visible in good lighting</li>
+                                <li>Ensure all text is legible and not blurry</li>
+                                <li>Try using a different document if available</li>
+                                <li>Check that the entire document is visible in the image</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="mt-4">
+            <div class="d-flex gap-2">
+                <a href="{% url 'start_verification' %}" class="btn btn-warning">Try Again</a>
+                <a href="{% url 'start_verification' %}?debug=verbose" class="btn btn-outline-info">
+                    <i class="fas fa-bug"></i> Try with Verbose Debug
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <small class="text-muted">Last attempt: {{ verification_doc.updated_at }}</small>
+    </div>
+</div>
+
+<a href="{% url 'profile' %}" class="btn btn-secondary">Back to Profile</a>
+{% endblock %}

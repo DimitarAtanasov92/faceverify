@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}OCR Results{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">OCR Results</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="card mb-4">
+                                <div class="card-header">Original Image</div>
+                                <div class="card-body text-center">
+                                    <img src="{{ ocr_image.image.url }}" alt="OCR Image" class="img-fluid" style="max-height: 400px;">
+                                </div>
+                                <div class="card-footer text-muted">
+                                    Uploaded: {{ ocr_image.uploaded_at|date:"F j, Y, g:i a" }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-7">
+                            <!-- Structured Data Card -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-primary text-white">Extracted Document Data</div>
+                                <div class="card-body">
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">Surname</th>
+                                                <td>{{ ocr_image.surname }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Name</th>
+                                                <td>{{ ocr_image.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Father's Name</th>
+                                                <td>{{ ocr_image.fathers_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Date of Birth</th>
+                                                <td>{{ ocr_image.date_of_birth }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Document Number</th>
+                                                <td>{{ ocr_image.document_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Date of Issue</th>
+                                                <td>{{ ocr_image.date_of_issue }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Date of Expiry</th>
+                                                <td>{{ ocr_image.date_of_expiry }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-sm btn-outline-primary copy-structured-data">Copy Structured Data</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Raw Text Card -->
+                            <div class="card">
+                                <div class="card-header">Full Extracted Text</div>
+                                <div class="card-body">
+                                    {% if ocr_image.processed_text %}
+                                        <div class="p-3 border rounded" style="white-space: pre-wrap; font-family: monospace; max-height: 200px; overflow-y: auto;">
+                                            {{ ocr_image.processed_text }}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning">
+                                            No text was extracted from this image.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-sm btn-outline-primary copy-text" 
+                                            data-text="{{ ocr_image.processed_text }}">
+                                        Copy Text
+                                    </button>
+                                    <a href="{% url 'ocr:ocr_home' %}" class="btn btn-sm btn-outline-secondary">Upload Another Image</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const copyButtons = document.querySelectorAll('.copy-text');
+    
+    copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const text = this.getAttribute('data-text');
+            navigator.clipboard.writeText(text).then(() => {
+                // Change button text temporarily
+                const originalText = this.textContent;
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                }, 2000);
+            });
+        });
+    });
+    
+    // Copy structured data as JSON
+    const copyStructuredButton = document.querySelector('.copy-structured-data');
+    if (copyStructuredButton) {
+        copyStructuredButton.addEventListener('click', function() {
+            const structuredData = {
+                surname: "{{ ocr_image.surname }}",
+                name: "{{ ocr_image.name }}",
+                fathers_name: "{{ ocr_image.fathers_name }}",
+                date_of_birth: "{{ ocr_image.date_of_birth }}",
+                document_number: "{{ ocr_image.document_number }}",
+                date_of_issue: "{{ ocr_image.date_of_issue }}",
+                date_of_expiry: "{{ ocr_image.date_of_expiry }}"
+            };
+            
+            navigator.clipboard.writeText(JSON.stringify(structuredData, null, 2)).then(() => {
+                const originalText = this.textContent;
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                }, 2000);
+            });
+        });
+    }
+});
+</script>
+{% endblock %} 

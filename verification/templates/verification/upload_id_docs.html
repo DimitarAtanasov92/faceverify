@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Upload ID Documents{% endblock %}
+
+{% block content %}
+<h2>Step 1: Upload Identity Document</h2>
+<p>Please upload clear images of the front and (if applicable) back of your identity document.</p>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Upload Document</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            {% if available_debug_modes %}
+            <div class="card mb-3 border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bug"></i> Debug Options
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="debug_mode">OCR Debug Level:</label>
+                        <select id="debug_mode" name="debug_mode" class="form-control">
+                            {% for mode in available_debug_modes %}
+                                <option value="{{ mode }}" {% if debug_mode == mode %}selected{% endif %}>
+                                    {{ mode|title }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <small class="form-text text-muted">
+                            <ul>
+                                <li><strong>Minimal:</strong> No debugging information.</li>
+                                <li><strong>Normal:</strong> Basic debug info and images.</li>
+                                <li><strong>Verbose:</strong> Full debug with all processing steps and interim results.</li>
+                            </ul>
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-primary">Upload and Continue</button>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h4>Supported Documents</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>We support the following document types:</h5>
+                <ul>
+                    <li>National ID cards</li>
+                    <li>Passports</li>
+                    <li>Driver's licenses</li>
+                    <li>Residence permits</li>
+                </ul>
+                
+                <h5>Required Information:</h5>
+                <p>Our system needs to extract at least:</p>
+                <ul>
+                    <li>Your full name</li>
+                    <li>At least one of these identification numbers:
+                        <ul>
+                            <li>Document/ID number</li>
+                            <li>Personal number</li>
+                            <li>Passport number</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="alert alert-warning">
+                    <h5>For Best Results:</h5>
+                    <ul>
+                        <li>Ensure your document is placed on a flat surface with good lighting</li>
+                        <li>All text should be clearly visible and not blurry</li>
+                        <li>Make sure the entire document is visible in the frame</li>
+                        <li>Avoid glare on the document</li>
+                        <li>Use the highest resolution possible when taking the photo</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-info">
+                    <h5>Processing Issues?</h5>
+                    <p>If you experience issues with document verification:</p>
+                    <ul>
+                        <li>Try using a different document if available</li>
+                        <li>Enable "Verbose" debug mode for detailed processing info</li>
+                        <li>Ensure document text is in English only</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

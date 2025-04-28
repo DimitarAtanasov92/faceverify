@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Verification Status{% endblock %}
+
+{% block content %}
+<h2>Verification Status</h2>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3>Status: {{ verification_doc.get_status_display }}</h3>
+        <div>
+            {% if verification_doc.status == 'VERIFIED' %}
+                <a href="{% url 'update_verification_data' %}" class="btn btn-warning me-2">
+                    <i class="fas fa-edit"></i> Update Data
+                </a>
+                <a href="?show_debug=true" class="btn btn-sm btn-outline-info" title="Show Debug Info">
+                    <i class="fas fa-bug"></i> Debug Options
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        {% if verification_doc.status == 'VERIFIED' %}
+            <div class="alert alert-success">
+                <h4>Your account is verified!</h4>
+                <p>You can now use all features of our application.</p>
+            </div>
+            
+            {% if verification_doc.extracted_data %}
+                <div class="mt-4">
+                    <h4>Extracted Document Information:</h4>
+                    <table class="table table-bordered">
+                        <tbody>
+                            {% if verification_doc.extracted_data.first_name %}
+                                <tr>
+                                    <th scope="row">First Name</th>
+                                    <td>{{ verification_doc.extracted_data.first_name }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.last_name %}
+                                <tr>
+                                    <th scope="row">Last Name</th>
+                                    <td>{{ verification_doc.extracted_data.last_name }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.identity_number %}
+                                <tr>
+                                    <th scope="row">Identity Number</th>
+                                    <td>{{ verification_doc.extracted_data.identity_number }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.document_number %}
+                                <tr>
+                                    <th scope="row">Document Number</th>
+                                    <td>{{ verification_doc.extracted_data.document_number }}</td>
+                                </tr>
+                            {% elif verification_doc.extracted_data.identity_number %}
+                                <tr>
+                                    <th scope="row">Document Number</th>
+                                    <td>{{ verification_doc.extracted_data.identity_number }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <th scope="row">Document Number</th>
+                                    <td class="text-muted"><em>No data available</em></td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.personal_number %}
+                                <tr>
+                                    <th scope="row">Personal Number</th>
+                                    <td>{{ verification_doc.extracted_data.personal_number }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.birth_date %}
+                                <tr>
+                                    <th scope="row">Date of Birth</th>
+                                    <td>{{ verification_doc.extracted_data.birth_date }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.nationality %}
+                                <tr>
+                                    <th scope="row">Nationality</th>
+                                    <td>{{ verification_doc.extracted_data.nationality }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.expiry_date %}
+                                <tr>
+                                    <th scope="row">Expiry Date</th>
+                                    <td>{{ verification_doc.extracted_data.expiry_date }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.issue_date %}
+                                <tr>
+                                    <th scope="row">Issue Date</th>
+                                    <td>{{ verification_doc.extracted_data.issue_date }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.place_of_birth %}
+                                <tr>
+                                    <th scope="row">Place of Birth</th>
+                                    <td>{{ verification_doc.extracted_data.place_of_birth }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.sex %}
+                                <tr>
+                                    <th scope="row">Sex</th>
+                                    <td>{{ verification_doc.extracted_data.sex }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.height %}
+                                <tr>
+                                    <th scope="row">Height</th>
+                                    <td>{{ verification_doc.extracted_data.height }} cm</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.eye_color %}
+                                <tr>
+                                    <th scope="row">Eye Color</th>
+                                    <td>{{ verification_doc.extracted_data.eye_color }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.issuing_authority %}
+                                <tr>
+                                    <th scope="row">Issuing Authority</th>
+                                    <td>{{ verification_doc.extracted_data.issuing_authority }}</td>
+                                </tr>
+                            {% endif %}
+                            
+                            {% if verification_doc.extracted_data.permanent_address %}
+                                <tr>
+                                    <th scope="row">Permanent Address</th>
+                                    <td>{{ verification_doc.extracted_data.permanent_address }}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            
+            {% if show_debug and verification_doc.extracted_data %}
+                <div class="mt-4">
+                    <h4 class="text-info">Debug Information</h4>
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5>All Extracted Fields</h5>
+                            <pre class="bg-dark text-light p-3">{{ verification_doc.extracted_data|pprint }}</pre>
+                            
+                            {% if debug_info %}
+                                <h5>OCR Debug Info</h5>
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <td>{{ debug_info.timestamp }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Debug Level</th>
+                                            <td>{{ debug_info.debug_level }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Fields Found</th>
+                                            <td>{{ debug_info.extracted_fields_count }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Fields List</th>
+                                            <td>{{ debug_info.extracted_fields|join:", " }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            {% endif %}
+                            
+                            <p class="mt-3">
+                                <small class="text-muted">Note: To view full debug logs including processing steps and intermediate results, check the debug directory in your media folder.</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+        {% elif verification_doc.status == 'PROCESSING' %}
+            <div class="alert alert-info">
+                <p>Your documents are being processed. Please check back later.</p>
+            </div>
+            
+        {% elif verification_doc.status == 'NEEDS_SELFIE' %}
+            <div class="alert alert-warning">
+                <p>Your ID documents have been accepted. Please upload a selfie to complete verification.</p>
+                <a href="{% url 'upload_selfie' %}" class="btn btn-primary mt-2">Upload Selfie</a>
+            </div>
+            
+        {% elif verification_doc.status == 'FAILED_DATA' or verification_doc.status == 'FAILED_MATCH' or verification_doc.status == 'FAILED_MANUAL' %}
+            <div class="alert alert-danger">
+                <p>
+                    <strong>Verification failed:</strong> 
+                    {% if verification_doc.status_reason %}
+                        {{ verification_doc.status_reason }}
+                    {% else %}
+                        Please try again with clearer document images.
+                    {% endif %}
+                </p>
+                <div class="d-flex gap-2 mt-2">
+                    <a href="{% url 'start_verification' %}" class="btn btn-warning">Try Again</a>
+                    <a href="{% url 'start_verification' %}?debug=verbose" class="btn btn-outline-info">
+                        <i class="fas fa-bug"></i> Try with Verbose Debug
+                    </a>
+                </div>
+            </div>
+            
+        {% else %}
+            <div class="alert alert-secondary">
+                <p>Your verification process has not been completed yet.</p>
+                <div class="d-flex gap-2 mt-2">
+                    <a href="{% url 'start_verification' %}" class="btn btn-primary">Start Verification</a>
+                    <a href="{% url 'start_verification' %}?debug=verbose" class="btn btn-outline-info">
+                        <i class="fas fa-bug"></i> Start with Debug
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="card-footer">
+        <small class="text-muted">Last updated: {{ verification_doc.updated_at }}</small>
+    </div>
+</div>
+
+<a href="{% url 'profile' %}" class="btn btn-secondary">Back to Profile</a>
+{% endblock %}

@@ -1,0 +1,6 @@
+Django>=5.0.0
+pillow>=9.5.0
+opencv-python>=4.5.0
+pytesseract>=0.3.0
+numpy>=1.22.0
+deepface>=0.0.75 
